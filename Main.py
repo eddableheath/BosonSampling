@@ -17,20 +17,16 @@ def BosonSampling(n, m, A):
         return: Photon output
     """
 
-    # Instantiate empty r array
-    r = []
     # Take first n rows of A
     A_n = A[:,:n]
     # Permute rows of A
     PA_n = A_n[:,np.random.permutation(n)]
     # Make indexed weight
-    w = []
-    for row in range(0, m):
-        w.append(abs(PA_n[row][0])**2)
+    w = [abs(PA_n[row][0]) ** 2 for row in range(0,m)]
     # Sample index from weighted index
     x = np.random.choice(m, p=w)
     # Append to r
-    r.append(x)
+    r = [x]
     # Laplace expansion
     for k in range(2, n):
         # Cut down to k columns and only take rows from r vals
@@ -39,16 +35,10 @@ def BosonSampling(n, m, A):
         Perms = lp.LaplaceExpansion(B_k, k)
         print('Perms:', Perms)
         # weighted index
-        weighted = []
-        for i in range(0, m):
-            sum = 0
-            for l in range(0, k):
-                #print('sum:', sum)
-                sum += PA_n[i][l] * Perms[l]
-                #print('Unitary elements:', PA_n[i][l])
-                #print('Perms:', Perms[l])
-                #print('sum squared:', sum**2)
-            weighted.append((sum)**2)
+        weighted = [
+            abs(sum([PA_n[i][l] * Perms[l] for l in range(0, k)])) ** 2
+            for i in range(0, m)
+        ]
         # Sample index from weighted index
         new_x = np.random.choice(m, p=weighted)
         # Append to r
