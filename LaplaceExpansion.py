@@ -24,7 +24,7 @@ def ForwardPartialProd(PartSums, k):
     :param k: sequence marker
     :return: list of forward partial products
     """
-    return [complex(1)] + [np.prod([PartSums[i] for i in range(l)]) for l in range(1,k)]
+    return [complex(1)] + [np.prod([PartSums[i] for i in range(l)]) for l in range(1,k+1)]
 
 
 # Backward partial product:
