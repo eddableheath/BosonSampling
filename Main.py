@@ -16,7 +16,6 @@ def BosonSampling(n, m, A):
         A: random unitary matrix from U(m)
         return: Photon output
     """
-
     # Take first n rows of A
     A_n = A[:,:n]
     # Permute rows of A
@@ -28,9 +27,10 @@ def BosonSampling(n, m, A):
     # Append to r
     r = [x]
     # Laplace expansion
-    for k in range(2, n):
+    for k in range(1, n):
         # Cut down to k columns and only take rows from r vals
-        B_k = PA_n[r,:k]
+        B_k = PA_n[r,:k+1]
+        print('B_k', B_k)
         # Compute permanents of submatrices
         Perms = lp.LaplaceExpansion(B_k, k)
         print('Perms:', Perms)

@@ -5,7 +5,6 @@
 import numpy as np
 import GrayCode as gc
 
-
 # Partial sum:
 def PartialSum(B_k, k, delta):
     """
@@ -14,11 +13,8 @@ def PartialSum(B_k, k, delta):
     :param delta: delta from {-1,1}^{k-1} space
     :return: list of partial sums
     """
-    sums = [
-        sum([B_k[i][j] * delta[i] for i in range(0, k-1)])
-            for j in range(0, k)
-    ]
-    return sums
+    B_kt = np.transpose(B_k)
+    return [np.dot(B_kt[j], delta) for j in range(k+1)]
 
 
 # Forward partial product:
@@ -28,15 +24,7 @@ def ForwardPartialProd(PartSums, k):
     :param k: sequence marker
     :return: list of forward partial products
     """
-    FProds = [1]
-    for l in range(1, k):
-        prod = 1+0j
-        for j in range(0, l):
-            print(j)
-            prod *= PartSums[j]
-            print('fprod:', prod)
-        FProds.append(prod)
-    return FProds
+    return [complex(1)] + [np.prod([PartSums[i] for i in range(l)]) for l in range(1,k)]
 
 
 # Backward partial product:
@@ -46,12 +34,8 @@ def BackwardPartialProd(PartSums, k):
     :param k: sequence marker
     :return: dictionary {l: b_l(delta)} where b_l is backward partial product, b_k = 1
     """
-    BProds = [
-        np.prod([PartSums[j] for j in range (l, k-1)])
-        for l in range(0, k-1)
-    ]
-    BProds.append(1)
-    return BProds
+    return [np.prod([PartSums[j] for j in range(l, k-1)]) for l in range(0, k)] + [complex(1)]
+
 
 
 # Partial products:
@@ -61,25 +45,14 @@ def PartialProducts(B_k, k):
     :param k: sequence marker
     :return: array [[f_1b_1(delta^1) ... f_k_b_k(delta^1)] ... [f_1b_1(delta^N) ... f_kb_k(delta^N)]] where N = 2^{k-1}
     """
-    GrayCode = gc.GrayCodes[k]
-    PartProds = []
-    for delta in GrayCode:
-        print('delta:', delta)
-        PartSum = PartialSum(B_k, k, delta)
-        print('Partial Sums:', PartSum)
-        Forward = ForwardPartialProd(PartSum, k)
-        print(Forward)
-        Backward = BackwardPartialProd(PartSum, k)
-        print(Backward)
-        prods = []
-        for l in range(1, k+1):
-            prods.append(Forward[l]*Backward[1])
-        PartProds.append(prods)
-    return PartProds
+    print("Partial Sum", PartialSum(B_k,k,[[1]]))
+    print("Forward", ForwardPartialProd(PartialSum(B_k, k, [[1]]), k))
+    print("Backward", BackwardPartialProd(PartialSum(B_k, k, [[1]]), k))
 
 
-def SignAlt(n):
-    return (-1+0j)**n
+    return [[x*y
+             for (x, y) in zip(ForwardPartialProd(PartialSum(B_k, k, delta), k), BackwardPartialProd(PartialSum(B_k, k, delta), k))
+            ] for delta in gc.GrayCodes[k]]
 
 
 def LaplaceExpansion(B_k, k):
@@ -88,12 +61,16 @@ def LaplaceExpansion(B_k, k):
     :param k: sequence marker
     :return: sequence of permanents of reduced matrices
     """
+
+    def SignAlt(n):
+        return (-1 + 0j) ** n
+
     PartProds = PartialProducts(B_k, k)
-    Perms = [
+    print('Part prods:', PartProds)
+    return [
         (1 / (2 ** (k - 2))) + 0j * sum([
             SignAlt(n)*PartProds[n][l]
             for n in range(0,2**(k-1))
         ])
         for l in range(0,k)
     ]
-    return Perms
