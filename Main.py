@@ -3,7 +3,6 @@
 # Implementation of algorithm B from https://arxiv.org/abs/1706.01260
 
 import numpy as np
-import random as rn
 import LaplaceExpansion as lp
 
 
@@ -34,11 +33,28 @@ def BosonSampling(n, m, A):
         # Compute permanents of submatrices
         Perms = lp.LaplaceExpansion(B_k, k)
         print('Perms:', Perms)
+        print(r)
         # weighted index
-        weighted = [
-            abs(sum([PA_n[i][l] * Perms[l] for l in range(0, k)])) ** 2
-            for i in range(0, m)
-        ]
+        weighted = []
+        for i in range(m):
+            print(i)
+            sums = []
+            for l in range(k+1):
+                print('unitary value', PA_n[i][l])
+                print('perm', Perms[l])
+                print('value', PA_n[i][l] * Perms[l])
+                sums.append(PA_n[i][l] * Perms[l])
+            print('sums', sums)
+            mod = abs(sum(sums))**2
+            print('sum of sums', sum(sums))
+            print('mod', mod)
+            weighted.append(mod)
+        #weighted = [
+        #    abs(sum([PA_n[i][l] * Perms[l] for l in range(0, k)])) ** 2
+        #    for i in range(0, m)
+        #]
+        print(weighted)
+        print(sum(weighted))
         # Sample index from weighted index
         new_x = np.random.choice(m, p=weighted)
         # Append to r

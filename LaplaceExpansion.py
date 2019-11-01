@@ -34,7 +34,7 @@ def BackwardPartialProd(PartSums, k):
     :param k: sequence marker
     :return: dictionary {l: b_l(delta)} where b_l is backward partial product, b_k = 1
     """
-    return [np.prod([PartSums[j] for j in range(l, k-1)]) for l in range(0, k)] + [complex(1)]
+    return [np.prod([PartSums[j] for j in range(r+1, k+1)]) for r in range(k)] + [complex(1)]
 
 
 
@@ -45,11 +45,6 @@ def PartialProducts(B_k, k):
     :param k: sequence marker
     :return: array [[f_1b_1(delta^1) ... f_k_b_k(delta^1)] ... [f_1b_1(delta^N) ... f_kb_k(delta^N)]] where N = 2^{k-1}
     """
-    print("Partial Sum", PartialSum(B_k,k,[[1]]))
-    print("Forward", ForwardPartialProd(PartialSum(B_k, k, [[1]]), k))
-    print("Backward", BackwardPartialProd(PartialSum(B_k, k, [[1]]), k))
-
-
     return [[x*y
              for (x, y) in zip(ForwardPartialProd(PartialSum(B_k, k, delta), k), BackwardPartialProd(PartialSum(B_k, k, delta), k))
             ] for delta in gc.GrayCodes[k]]
@@ -66,11 +61,9 @@ def LaplaceExpansion(B_k, k):
         return (-1 + 0j) ** n
 
     PartProds = PartialProducts(B_k, k)
-    print('Part prods:', PartProds)
     return [
-        (1 / (2 ** (k - 2))) + 0j * sum([
+        ((1 / (2 ** (k - 1))) + 0j) * sum([
             SignAlt(n)*PartProds[n][l]
-            for n in range(0,2**(k-1))
-        ])
-        for l in range(0,k)
+            for n in range(len(PartProds))])
+        for l in range(0,k+1)
     ]
