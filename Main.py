@@ -21,6 +21,7 @@ def BosonSampling(n, m, A):
     PA_n = A_n[:,np.random.permutation(n)]
     # Make indexed weight
     w = [abs(PA_n[row][0]) ** 2 for row in range(0,m)]
+    print('weighted cols sum:', sum(w))
     # Sample index from weighted index
     x = np.random.choice(m, p=w)
     # Append to r
@@ -37,18 +38,13 @@ def BosonSampling(n, m, A):
         # weighted index
         weighted = []
         for i in range(m):
-            print(i)
+            print('i', i)
             sums = []
             for l in range(k+1):
-                print('unitary value', PA_n[i][l])
-                print('perm', Perms[l])
-                print('value', PA_n[i][l] * Perms[l])
                 sums.append(PA_n[i][l] * Perms[l])
-            print('sums', sums)
-            mod = abs(sum(sums))**2
-            print('sum of sums', sum(sums))
-            print('mod', mod)
-            weighted.append(mod)
+            print('sums:', sums)
+            print('sum sums:', sum(sums))
+            print('mod squared:', abs(sum(sums))**2)
         #weighted = [
         #    abs(sum([PA_n[i][l] * Perms[l] for l in range(0, k)])) ** 2
         #    for i in range(0, m)
