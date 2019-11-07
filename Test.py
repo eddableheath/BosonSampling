@@ -5,9 +5,9 @@
 from scipy.stats import unitary_group
 import Main as bs
 
-A = unitary_group.rvs(4)
+A = unitary_group.rvs(36)
 
-Out = bs.BosonSampling(2, 4, A)
+Out = bs.BosonSampling(6, 36, A)
 
 print(Out)
 

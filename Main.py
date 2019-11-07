@@ -21,7 +21,6 @@ def BosonSampling(n, m, A):
     PA_n = A_n[:,np.random.permutation(n)]
     # Make indexed weight
     w = [abs(PA_n[row][0]) ** 2 for row in range(0,m)]
-    print('weighted cols sum:', sum(w))
     # Sample index from weighted index
     x = np.random.choice(m, p=w)
     # Append to r
@@ -30,29 +29,16 @@ def BosonSampling(n, m, A):
     for k in range(1, n):
         # Cut down to k columns and only take rows from r vals
         B_k = PA_n[r,:k+1]
-        print('B_k', B_k)
         # Compute permanents of submatrices
         Perms = lp.LaplaceExpansion(B_k, k)
-        print('Perms:', Perms)
-        print(r)
         # weighted index
-        weighted = []
-        for i in range(m):
-            print('i', i)
-            sums = []
-            for l in range(k+1):
-                sums.append(PA_n[i][l] * Perms[l])
-            print('sums:', sums)
-            print('sum sums:', sum(sums))
-            print('mod squared:', abs(sum(sums))**2)
-        #weighted = [
-        #    abs(sum([PA_n[i][l] * Perms[l] for l in range(0, k)])) ** 2
-        #    for i in range(0, m)
-        #]
-        print(weighted)
-        print(sum(weighted))
+        weighted = [
+            abs(sum([PA_n[i][l] * Perms[l] for l in range(0, k)])) ** 2
+            for i in range(0, m)
+        ]
+        wnormed = [float(i)/sum(weighted) for i in weighted]
         # Sample index from weighted index
-        new_x = np.random.choice(m, p=weighted)
+        new_x = np.random.choice(m, p=wnormed)
         # Append to r
         r.append(new_x)
     # Sort in non-decreasing order
