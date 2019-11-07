@@ -5,23 +5,17 @@
 from scipy.stats import unitary_group
 import Main as bs
 
-A = unitary_group.rvs(36)
 
-Out = bs.BosonSampling(6, 36, A)
+def Sim(n, m):
+    """
+    Instantiating the boson sampling simulation
+    :param n: number of photons
+    :param m: number of input/output modes
+    :return: Photon output
+    """
+    # Generating m dimensional unitary matrix
+    A = unitary_group.rvs(m)
+    return bs.BosonSampling(n, m, A)
 
-print(Out)
+print(Sim(3, 9))
 
-
-#for i in range(m):
-        #    print(i)
-        #    sums = []
-        #    for l in range(k+1):
-        #        print('unitary value', PA_n[i][l])
-        #        print('perm', Perms[l])
-        #        print('value', PA_n[i][l] * Perms[l])
-        #        sums.append(PA_n[i][l] * Perms[l])
-        #    print('sums', sums)
-        #    mod = abs(sum(sums))**2
-        #   print('sum of sums', sum(sums))
-        #    print('mod', mod)
-        #    weighted.append(mod)
