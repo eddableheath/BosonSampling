@@ -47,7 +47,7 @@ def PartialProducts(B_k, k):
     """
     return [[x*y
              for (x, y) in zip(ForwardPartialProd(PartialSum(B_k, k, delta), k), BackwardPartialProd(PartialSum(B_k, k, delta), k))
-            ] for delta in gc.GrayCodes[k]]
+            ] for delta in gc.RetrieveCode(k)]
 
 
 def LaplaceExpansion(B_k, k):

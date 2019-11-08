@@ -17,5 +17,5 @@ def Sim(n, m):
     A = unitary_group.rvs(m)
     return bs.BosonSampling(n, m, A)
 
-print(Sim(3, 9))
+print(Sim(8, 64))
 

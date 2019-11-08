@@ -6,8 +6,15 @@
 #
 # First pass: Manually enter Gray code
 
+import os
+import numpy as np
+
 # For Gray code gen
-def GrayCode(n):
+def GrayCodeGen(n):
+    """
+    :param n: Dimension of Gray code
+    :return: generates n by 2^n-1 array of {-1,1}^2n-1 with first entry 1 in Gray Code ordering
+    """
     n = n - 1
     if n <= 0:
         return
@@ -28,85 +35,26 @@ def GrayCode(n):
     return arr
 
 
-# Gray Codes
-GC_1 = [[1]]
-
-GC_2 = [[1, 1],
-        [1, -1]]
-
-GC_3 = [[1, 1, 1],
-        [1, 1, -1],
-        [1, -1, -1],
-        [1, -1, 1]]
-
-GC_4 = [[1, 1, 1, 1],
-        [1, 1, 1, -1],
-        [1, 1, -1, -1],
-        [1, 1, -1, 1],
-        [1, -1, -1, 1],
-        [1, -1, -1, -1],
-        [1, -1, 1, -1],
-        [1, -1, 1, 1]]
-
-GC_5 = [[1, 1, 1, 1, 1],
-        [1, 1, 1, 1, -1],
-        [1, 1, 1, -1, -1],
-        [1, 1, 1, -1, 1],
-        [1, 1, -1, -1, 1],
-        [1, 1, -1, -1, -1],
-        [1, 1, -1, 1, -1],
-        [1, 1, -1, 1, 1],
-        [1, -1, -1, 1, 1],
-        [1, -1, -1, 1, -1],
-        [1, -1, -1, -1, -1],
-        [1, -1, -1, -1, 1],
-        [1, -1, 1, -1, 1],
-        [1, -1, 1, -1, -1],
-        [1, -1, 1, 1, -1],
-        [1, -1, 1, 1, 1]]
-
-GC_6 = [[1, 1, 1, 1, 1, 1],
-        [1, 1, 1, 1, 1, -1],
-        [1, 1, 1, 1, -1, -1],
-        [1, 1, 1, 1, -1, 1],
-        [1, 1, 1, -1, -1, 1],
-        [1, 1, 1, -1, -1, -1],
-        [1, 1, 1, -1, 1, -1],
-        [1, 1, 1, -1, 1, 1],
-        [1, 1, -1, -1, 1, 1],
-        [1, 1, -1, -1, 1, -1],
-        [1, 1, -1, -1, -1, -1],
-        [1, 1, -1, -1, -1, 1],
-        [1, 1, -1, 1, -1, 1],
-        [1, 1, -1, 1, -1, -1],
-        [1, 1, -1, 1, 1, -1],
-        [1, 1, -1, 1, 1, 1],
-        [1, -1, -1, 1, 1, 1],
-        [1, -1, -1, 1, 1, -1],
-        [1, -1, -1, 1, -1, -1],
-        [1, -1, -1, 1, -1, 1],
-        [1, -1, -1, -1, -1, 1],
-        [1, -1, -1, -1, -1, -1],
-        [1, -1, -1, -1, 1, -1],
-        [1, -1, -1, -1, 1, 1],
-        [1, -1, 1, -1, 1, 1],
-        [1, -1, 1, -1, 1, -1],
-        [1, -1, 1, -1, -1, -1],
-        [1, -1, 1, -1, -1, 1],
-        [1, -1, 1, 1, -1, 1],
-        [1, -1, 1, 1, -1, -1],
-        [1, -1, 1, 1, 1, -1],
-        [1, -1, 1, 1, 1, 1]]
-
-# Look up library:
-
-GrayCodes = {1: GC_1,
-             2: GC_2,
-             3: GC_3,
-             4: GC_4,
-             5: GC_5,
-             6: GC_6}
-
-
-
+# Searching for and retrieving or writing Gray Code:
+def RetrieveCode(k):
+    """
+    :param k: Desired Gray Code dimension
+    :return: Required Gray code array, will generate and write code if not already available
+    """
+    # Code search
+    def findcode(n):
+        if any(str(n) in entry for entry in os.listdir('GrayCodes/')):
+            return True
+        else:
+            return False
+    # Special case for k = 1
+    if k == 1:
+        return np.array([[1]])
+    else:
+        if findcode(k) == True:
+            return np.genfromtxt('GrayCodes/' + str(k) + '.csv', delimiter = ',')
+        else:
+            newCode = np.asarray(GrayCodeGen(k))
+            np.savetxt('GrayCodes/' + str(k) + '.csv', newCode, delimiter = ',')
+            return newCode
 
