@@ -2,9 +2,7 @@
 # Author: Edmund Dable-Heath
 #
 # The gray code needs to be generated for the space {-1,1}^n and the first element is required to be 1
-# Ideally this check a look up table and if it doesn't find the Gray code already generated it will generate it
-#
-# First pass: Manually enter Gray code
+# This generates gray codes not found and stores them in the directory GrayCodes
 
 import os
 import numpy as np

@@ -28,12 +28,17 @@ A = np.array([[7, 3, -12, -13, 77, -286, -1195, 5249],
 X = np.matmul(A, E8)
 
 picked = np.array([0, 0, 0, 0, 0, 0, 0, 0])
-for i in Sim(4,8):
-    print(i)
-    print(X[i])
-    mult = np.random.choice([1, -1])
-    print(mult)
-    picked = picked + (mult*X[i])
+for i in Sim(4, 16):
+    print('i:', i)
+    z = (-1)**(i-1)
+    if i % 2 == 0:
+        j = i/2
+        print(int(j))
+        picked = picked + (z * E8[int(j)])
+    else:
+        j = (i - 1)/2
+        print(int(j))
+        picked = picked + (z * E8[int(j)])
 
 print(picked)
 print('length:', np.linalg.norm(picked))
