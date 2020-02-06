@@ -1,44 +1,36 @@
 # An attempt to sample from lattices using Boson sampling
 # Author: Edmund Dable-Heath
-# Various different methods proposed for sampling from a lattice. Here we see vectors are picked from the E8 lattice
-# given each output mode corresponding to a different basis vector.
+# Collecting data from sampling the lattices stored in the lattice directory:
+# Dimension/ latt number/ 0 - 3, lattice bases, 4 shortest vector, 5 shortest vector length
+# First test using 2 dimensional lattices, so 2 photons, 4 dimensional unitaries and pick 4 times per pick.
 
 from Simulation import Sim
 import numpy as np
+import Unitaries as un
+import math
 
-E8 = np.array([[2, -1, 0, 0, 0, 0, 0, 1/2],
-               [0, 1, -1, 0, 0, 0, 0, 1/2],
-               [0, 0, 1, -1, 0, 0, 0, 1/2],
-               [0, 0, 0, 1, -1, 0, 0, 1/2],
-               [0, 0, 0, 0, 1, -1, 0, 1/2],
-               [0, 0, 0, 0, 0, 1, -1, 1/2],
-               [0, 0, 0, 0, 0, 0, 1, 1/2],
-               [0, 0, 0, 0, 0, 0, 0, 1/2]])
 
-# Random unimodular matrices:
-A = np.array([[7, 3, -12, -13, 77, -286, -1195, 5249],
-              [5, 6, -23, 9, 92, -372, -1523, 6775],
-              [3, -2, 4, -17, 11, -24, -116, 457],
-              [-1, -4, 12, -12, -35, 150, 608, -2732],
-              [-3, -1, 4, 7, -30, 109, 458, -2005],
-              [-3, -4, 13, -6, -53, 212, 871, -3876],
-              [2, -2, 7, -19, -3, 37, 129, -630],
-              [-2, 3, -6, 17, -2, -10, -22, 151]])
-
-X = np.matmul(A, E8)
-
-picked = np.array([0, 0, 0, 0, 0, 0, 0, 0])
-for i in Sim(4, 16):
-    print('i:', i)
-    z = (-1)**(i-1)
-    if i % 2 == 0:
-        j = i/2
-        print(int(j))
-        picked = picked + (z * E8[int(j)])
-    else:
-        j = (i - 1)/2
-        print(int(j))
-        picked = picked + (z * E8[int(j)])
-
-print(picked)
-print('length:', np.linalg.norm(picked))
+def sampler(dimension, samples, number_unitaries=100, number_lattices=3, lattice_type='all'):
+    """
+    For a given dimension will pick from n different lattices, with basis type prescribed, using m different
+    unitaries, sampling r times each time.
+    :param dimension: dimension of lattice, int
+    :param samples: number of samples, int
+    :param number_unitaries: how many unitaries to test, default is all 100, int
+    :param number_lattices: how many lattices to test, default is all 3 per dimension, int
+    :param lattice_type: which kind of basis to pick, default is to cycle through all of them, with the others:
+    0: Original random basis, B_1
+    1: B_2 = U * B_1 where U is a random unimodular matrix
+    2: B_3 = LLL(B_1) LLL reduced B_1
+    3: B_4 = U * B_3
+    :return:
+    """
+    # how big the unitary should be
+    unitary_dimension = 2 * dimension
+    # how many times it needs to be sampled from per vector picked (just 2 * dimension for now)
+    sample_number = 2 * dimension
+    # how many photons: unitary_dimension = poly(photons), so round down square root of unitary dimension.
+    photons = math.floor(math.sqrt(unitary_dimension))
+    # retrieving unitaries
+    unitaries = un.retrieval(dimension, number_unitaries)
+    # Looping over lattices:
