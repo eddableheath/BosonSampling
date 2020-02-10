@@ -6,7 +6,7 @@ from scipy.stats import unitary_group
 import Main as bs
 
 
-def Sim(n, m, U = 0):
+def Sim(n, m, U='rand'):
     """
     Instantiating the boson sampling simulation
     :param n: number of photons
@@ -15,11 +15,7 @@ def Sim(n, m, U = 0):
     :return: Photon output
     """
     # Generating m dimensional unitary matrix
-    if U == 0:
-        A = unitary_group.rvs(m)
-        return bs.BosonSampling(n, m, A)
-    else:
-        return bs.BosonSampling(n, m, U)
+    return bs.BosonSampling(n, m, unitary_group.rvs(m) if U == 'rand' else U)
 
-#print(Sim(4, 4))
+#print(Sim(15, 225))
 

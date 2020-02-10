@@ -44,3 +44,4 @@ def retrieval(d, m):
                 for i in range(0, m)]
 
 
+GenUnitary(4)
