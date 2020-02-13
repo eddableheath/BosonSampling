@@ -22,8 +22,8 @@ def sampler(latt_dim, latt_basis, unitary):
                 for vec in Sim(math.floor(math.sqrt(2*latt_dim)), 2*latt_dim, unitary)])
 
 
-print(np.linalg.norm(sum([sampler(2, np.genfromtxt('Lattices/2/0/0.csv', delimiter=',', dtype=None),
-              np.genfromtxt('Unitaries/4/0.csv', delimiter=',', dtype=None)) for i in range(4)])))
+#print(np.linalg.norm(sum([sampler(2, np.genfromtxt('Lattices/2/0/0.csv', delimiter=',', dtype=None),
+#              np.genfromtxt('Unitaries/4/0.csv', delimiter=',', dtype=None)) for i in range(4)])))
 
 
 def lattice_data(dimension, samples, number_unitaries=100, number_lattices=3, lattice_type='all'):
@@ -68,6 +68,6 @@ def lattice_data(dimension, samples, number_unitaries=100, number_lattices=3, la
         results = {}
         for u in unitaries:
             for l in range(len(lattices)):
-                lengths = [np.linalg.norm(sum([Sim.Sim(photons, dimension, u)
-                                               for i in range(sample_number)])) for i in range(samples)]
+                lengths = [np.linalg.norm(sum([sampler(dimension, l, u)
+                                               for i in range(sample_number)])) for j in range(samples)]
 
