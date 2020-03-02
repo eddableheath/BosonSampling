@@ -8,7 +8,11 @@ from Simulation import Sim
 import numpy as np
 import Unitaries as un
 import math
+import statistics as st
+import time
 
+# Measuring the time it will take
+start_time = time.time()
 
 def sampler(latt_dim, latt_basis, unitary):
     """
@@ -26,14 +30,12 @@ def sampler(latt_dim, latt_basis, unitary):
 #              np.genfromtxt('Unitaries/4/0.csv', delimiter=',', dtype=None)) for i in range(4)])))
 
 
-def lattice_data(dimension, samples, number_unitaries=100, number_lattices=3, lattice_type='all'):
+def lattice_data(dimension, samples, lattice_type):
     """
     For a given dimension will pick from n different lattices, with basis type prescribed, using m different
     unitaries, sampling r times each time.
     :param dimension: dimension of lattice, int
     :param samples: number of samples, int
-    :param number_unitaries: how many unitaries to test, default is all 100, int
-    :param number_lattices: how many lattices to test, default/max is all 3 per dimension, int
     :param lattice_type: which kind of basis to pick, default is to cycle through all of them, with the others:
     0: Original random basis, B_1
     1: B_2 = U * B_1 where U is a random unimodular matrix
@@ -44,30 +46,28 @@ def lattice_data(dimension, samples, number_unitaries=100, number_lattices=3, la
     # how big the unitary should be
     unitary_dimension = 2 * dimension
     # how many times it needs to be sampled from per vector picked (just 2 * dimension for now)
-    sample_number = 2 * dimension
-    # how many photons: unitary_dimension = poly(photons), so round down square root of unitary dimension.
-    photons = math.floor(math.sqrt(unitary_dimension))
+    sample_number = 2
     # retrieving unitaries
-    unitaries = un.retrieval(dimension, number_unitaries)
+    unitaries = un.retrieval(unitary_dimension, 100)
     # Looping over lattices:
-    if lattice_type == 'all':
-        # loop over lattices
-        lattices = [[np.genfromtxt('Lattices/' + str(dimension) + '/' + str(j) + '/' + str(i) + '.csv', delimiter=',', dtype=None)
-                     for i in range(4)] for j in range(number_lattices)]
-        short_vector = [np.genfromtxt('Lattices/' + str(dimension) + ',' + str(j) + '4.csv', delimiter=',', dtype=None)
-                        for j in range(number_lattices)]
-        short_vec_length = [np.genfromtxt('Lattices/' + str(dimension) + '/' + str(j) + '5.csv', delimiter=',', dtype=None)
-                            for j in range(number_lattices)]
-    else:
-        lattices = [np.genfromtxt('Lattices/' + str(dimension) + '/' + str(j) + '/' + str(lattice_type) + '.csv', delimiter=',', dtype=None)
-                    for j in range(number_lattices)]
-        short_vector = [np.genfromtxt('Lattices/' + str(dimension) + ',' + str(j) + '4.csv', delimiter=',', dtype=None)
-                        for j in range(number_lattices)]
-        short_vec_length = [np.genfromtxt('Lattices/' + str(dimension) + '/' + str(j) + '5.csv', delimiter=',', dtype=None)
-                            for j in range(number_lattices)]
-        results = {}
+    mins = []
+    maxs = []
+    means = []
+    variances = []
+    lattices = [(np.genfromtxt('Lattices/' + str(dimension) + '/' + str(i) + '/' + str(lattice_type) + '.csv', delimiter=',', dtype=None),
+                 np.genfromtxt('Lattices/' + str(dimension) + '/' + str(i) + '/5.csv', delimiter=',', dtype=None)) for i in range(3)]
+    for lattice in lattices:
         for u in unitaries:
-            for l in range(len(lattices)):
-                lengths = [np.linalg.norm(sum([sampler(dimension, l, u)
-                                               for i in range(sample_number)])) for j in range(samples)]
+            ratios = [x / lattice[1]
+                      for x in [np.linalg.norm(sum([sampler(dimension, lattice[0], u)
+                                                    for i in range(sample_number)])) for j in range(samples)]
+                      if x != 0.0]
+            mins.append(min(ratios))
+            maxs.append(max(ratios))
+            means.append(st.mean(ratios))
+            variances.append(math.sqrt(st.variance(ratios)))
+    return [st.mean(mins), st.mean(maxs), st.mean(means), st.mean(variances)]
 
+
+#print(lattice_data(12, 1000, 0))
+#print('--- %s seconds ---' % (time.time() - start_time))
