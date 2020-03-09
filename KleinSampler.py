@@ -46,18 +46,27 @@ def KleinSampler(Basis, standard_deviation, target):
         print('updated vec:', v)
     return v
 
-def SmoothingParam(Basis):
+
+def SmoothingParam(Basis, param):
     '''
     Approximates the smoothing parameter
     :param Basis: Lattice basis
     :return: Approximation of the lattice basis and lower bound on standard deviation
     '''
     dim = len(Basis)
+    Q, R = np.linalg.qr(Basis)
+    bound = 2 ** (-param)
+    smooth = (1/math.pi) * math.sqrt(0.5 * math.log(2 * dim * (1 + (1/bound))))
+    sizes = [np.linalg.norm(i) for i in Q.transpose()]
+    return (smooth, smooth * max(sizes))
 
 
-test_basis = np.genfromtxt('Lattices/2/0/1.csv', dtype=None, delimiter=',')
-test_target = np.array([0,0])
-test_std_dev = 1.
+test_basis = np.array([[4309, 53],
+                       [1296, 16]])
+test_target = np.array([0, 0])
+test_std_dev = SmoothingParam(test_basis, 2)[0]
+
+print(test_std_dev)
 
 print(KleinSampler(test_basis, test_std_dev, test_target))
 
