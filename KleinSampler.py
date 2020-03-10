@@ -7,6 +7,7 @@ import math
 
 'Requires basis matrix to be column form.'
 
+
 def KleinSampler(Basis, standard_deviation, target):
     '''
     Implementation of the Klein Sampler
@@ -34,7 +35,7 @@ def KleinSampler(Basis, standard_deviation, target):
         d = np.inner(c, Qt[i]) / (R[i][i] ** 2)
         print('shifty:', d)
         # Temporary standard deviation:
-        sigma = standard_deviation / R[i][i]
+        sigma = standard_deviation / abs(R[i][i])
         print('adjusted standard deviation:', sigma)
         # Randomised rounding via Gaussian:
         z = round(np.random.normal(loc=d, scale=sigma))
@@ -47,7 +48,7 @@ def KleinSampler(Basis, standard_deviation, target):
     return v
 
 
-def SmoothingParam(Basis, param):
+def SmoothingParam(Basis):
     '''
     Approximates the smoothing parameter
     :param Basis: Lattice basis
@@ -55,18 +56,21 @@ def SmoothingParam(Basis, param):
     '''
     dim = len(Basis)
     Q, R = np.linalg.qr(Basis)
-    bound = 2 ** (-param)
+    bound = 2 ** (-dim)
     smooth = (1/math.pi) * math.sqrt(0.5 * math.log(2 * dim * (1 + (1/bound))))
     sizes = [np.linalg.norm(i) for i in Q.transpose()]
     return (smooth, smooth * max(sizes))
 
 
-test_basis = np.array([[4309, 53],
-                       [1296, 16]])
-test_target = np.array([0, 0])
-test_std_dev = SmoothingParam(test_basis, 2)[0]
+test_basis = np.array([[256, 0, 0],
+                       [-101, 1, 0],
+                       [-44, 0, 1]])
+test_target = np.array([1, 1, 1])
+test_std_dev = SmoothingParam(test_basis)[0]
 
-print(test_std_dev)
+result = KleinSampler(test_basis.transpose(), test_std_dev, test_target)
+print(result)
+print(np.linalg.norm(result))
 
-print(KleinSampler(test_basis, test_std_dev, test_target))
-
+q, r = np.linalg.qr(test_basis.transpose())
+print(r)
